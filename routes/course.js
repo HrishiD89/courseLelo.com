@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true })
 
+const {courseModel} = require("../db");
+
+
 router.post("/purchases", (req, res) => {
   res.json({
     message: "puchase course",
