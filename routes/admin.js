@@ -2,7 +2,12 @@ const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+const adminAuthMiddlewere = require("../middleware/admin");
+
+
 const { adminModel, courseModel } = require("../db");
+
+
 const adminSecret = process.env.JWT_ADMIN_SECRET;
 
 const adminRouter = Router();
@@ -50,20 +55,20 @@ adminRouter.post("/signup", async (req, res) => {
   }
 });
 
-function adminAuthMiddlewere(req, res, next) {
-  const adminToken = req.headers.authorization;
-  const response = jwt.verify(adminToken, adminSecret);
-  console.log(response);
+// function adminAuthMiddlewere(req, res, next) {
+//   const adminToken = req.headers.authorization;
+//   const response = jwt.verify(adminToken, adminSecret);
+//   console.log(response);
 
-  if (response) {
-    req.adminId = response.id;
-    next();
-  } else {
-    res.status(403).json({
-      message: "not authorized",
-    });
-  }
-}
+//   if (response) {
+//     req.adminId = response.id;
+//     next();
+//   } else {
+//     res.status(403).json({
+//       message: "not authorized",
+//     });
+//   }
+// }
 
 adminRouter.post("/course", adminAuthMiddlewere, async (req, res) => {
   const adminId = req.adminId;
@@ -153,7 +158,7 @@ adminRouter.delete("/course", adminAuthMiddlewere, async (req, res) => {
   }
 });
 
-adminRouter.get("/course/bulk", adminAuthMiddlewere,async (req, res) => {
+adminRouter.get("/course/bulk",adminAuthMiddlewere,async (req, res) => {
     const adminId = req.adminId;
     try {
         const response = await courseModel.find({

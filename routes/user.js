@@ -7,18 +7,8 @@ const userSecret = process.env.JWT_USER_SECRET;
 
 const { userModel, purchaseModel } = require("../db");
 
-function userAuthMiddlewere(req, res, next) {
-  const usertoken = req.headers.authorization;
-  const response = jwt.verify(usertoken,userSecret);
-  if (response) {
-    req.userId = response.userId;
-    next();
-  } else {
-    res.status(403).json({
-      message: "unauthorized",
-    });
-  }
-}
+const userAuthMiddlewere = require("../middleware/user");
+
 router.post("/signup", async (req, res) => {
   try {
     const { email, password, firstName, lastName } = req.body;
@@ -49,29 +39,60 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  
-  const user = await userModel.findOne({email,password});
 
-  if(!user){
+  const user = await userModel.findOne({ email, password });
+
+  if (!user) {
     res.status(403).json({
-      message : "Incorrect credentials",
-    })
-  }else{
-      const usertoken = jwt.sign({
-        id:user._id.toString(),
-      },userSecret);
-  
-      res.json({
-        usertoken,
-        message : "You are successfully logged in"
-      })
+      message: "Incorrect credentials",
+    });
+  } else {
+    const usertoken = jwt.sign(
+      {
+        id: user._id.toString(),
+      },
+      userSecret
+    );
+
+    res.json({
+      usertoken,
+      message: "You are successfully logged in",
+    });
   }
 });
 
-router.get("/purchases", userAuthMiddlewere, (req, res) => {
-  res.json({
-    message: "my courses",
-  });
-}); //my course
+router.get("/purchases", userAuthMiddlewere, async (req, res) => {
+  const userId = req.userId;
+  console.log("userId :",userId);
+  try {
+    if (!userId) {
+      res.json({
+        message: "Validation Error",
+      });
+    } else {
+      const myCourses = await purchaseModel
+        .find({
+          userId: userId,
+        })
+        .populate(["userId", "courseId"])
+        .exec();
+
+
+      console.log("My courses :");
+      myCourses.forEach((course,idx)=>{
+        console.log(`course ${idx+1} :`,course.courseId.title);
+      })
+
+      res.json({
+        myCourses,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      message: "Something went wrong!"
+    });
+  }
+});
 
 module.exports = router;

@@ -10,3 +10,11 @@
  - Add middlewares for user and admin auth
  - Complete the routes for user login, signup, purchase a course, see course (Extra points - Use express routing to better structure your routes)
  - Create the frontend
+
+
+
+Good to have things in the project :
+
+-Use cookies instead of JWT for Auth
+-Add a rate limiting middleware
+-Frontend in React

@@ -63,12 +63,12 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
-  creatorId: objectId,
+  creatorId: {type:Schema.Types.ObjectId,ref: 'admin'},
 });
 
 const purchaseSchema = new Schema({
-  courseId: objectId,
-  userId: objectId,
+  courseId: { type: Schema.Types.ObjectId, ref: 'course' },
+  userId: { type: Schema.Types.ObjectId, ref: 'user' },
 });
 
 const userModel = mongoose.model("user", userSchema);
