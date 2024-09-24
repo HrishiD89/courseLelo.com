@@ -1,17 +1,7 @@
 const mongoose = require("mongoose");
 require('dotenv').config();
 
-async function connectToMongoDB() {
-    try {
-        await mongoose.connect(process.env.MONGO_STRING);
-        console.log('Successfully connected to MongoDB');
-    } catch (error) {
-        console.log('Error connecting to MongoDB');
-        console.error('Error details:', error);
 
-    }
-}
-connectToMongoDB();
 
 const Schema = mongoose.Schema;
 const objectId = Schema.ObjectId;
@@ -86,7 +76,7 @@ const adminModel = mongoose.model("admin", adminSchema);
 const courseModel = mongoose.model("course", courseSchema);
 const purchaseModel = mongoose.model("purchase", purchaseSchema);
 
-module.export = {
+module.exports = {
   userModel,
   adminModel,
   courseModel,
